@@ -1,0 +1,5 @@
+Couper une ligne
+  Ctrl + x
+
+Sélectionner un mot
+  Ctrl + d

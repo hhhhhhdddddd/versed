@@ -1,0 +1,28 @@
+Une hiéarchie d'héritage du type
+
+TypeX
+^
+|
++----------+...
+|          |
+SousTypeX1 SousTypeX2 ...
+
+peut se coder sous la forme
+
+monProgramme.typeX = (function() {
+    var _typesX = {
+        sousTypeX1: {...},
+        sousTypeX2: {...},
+        ...
+    };
+
+    return {
+        create : function(type, ...) {
+            var typeX = Object.create(_typeX[type])
+            ...
+            return typeX
+        }
+    };
+})()
+
+et ce, plutôt que de définir chaque sous type dans son propre fichier.

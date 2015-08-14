@@ -1,0 +1,7 @@
+panel
+1/
+<- *verticalPanel
+<- *horizontalPanel
+<- *fieldPanel
+<- *verticalFieldPanel
+<- *horizontalFieldPanel

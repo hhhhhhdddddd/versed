@@ -1,0 +1,17 @@
+Renommage
+tokensEditionPanel
+versionsEditionPanel
+---
+Renommer l'appli versed (pour VERSionsEDitor).
+Un ensemble de versions (différente ou pas) d'un texte.
+On aggrège les ligne avec versions.aggregate().
+---
+Renommer "name" en "id" (name n'implique pas l'unicité)
+---
+Trucs à extraire:
+HDParser
+HDFields
+HDForm
+noyau(entrée: texte parsable, sortie: liste d'input)
+---
+lines = ["#tokens", "a b", "#tokens", "", "c d", ""]
