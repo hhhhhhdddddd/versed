@@ -3,6 +3,8 @@ versed = (function () {
     return {
         
         main : function() {
+            HD_.Debug.persistentLocalWarnings();
+            
             var typeOfInputValues = versed.textVersions.findInputTypes();
             var textVersions = versed.textVersions.create();
             var mainPanel = versed.mainPanel.create(typeOfInputValues, textVersions);

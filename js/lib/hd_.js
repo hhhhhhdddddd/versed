@@ -1,6 +1,131 @@
 HD_ = (function() {
     return {};
 })();
+HD_.Ajax = (function() {
+
+    return {
+        makeRequest : function(requestType, url, onSuccess, onError, onFinished) {
+            // Instances of XMLHttpRequest can make an HTTP request to the server.
+            var httpRequest = new XMLHttpRequest();
+
+            // Tells the HTTP request object which JavaScript function will handle processing the response. 
+            httpRequest.onreadystatechange = function responseHandler() {
+                if (httpRequest.readyState === 4) {
+                    if (httpRequest.status === 200) {
+                        onSuccess(httpRequest.responseText);
+                        onFinished();
+                    } else {
+                        onError();
+                        onFinished();
+                    }
+                }
+            };
+
+            // Actually make the request.
+            httpRequest.open(requestType, url);
+            httpRequest.send();
+        },
+
+        chainRequests : function(requestType, urls, onSuccess, onFinished, onError) {
+
+            function createArrayIterator(anArray) {
+                var iterator = Object.create(null);
+                iterator.position = 0;
+                iterator.list = anArray;
+
+                iterator.hasNext = function() {
+                    return this.position < this.list.length;
+                };
+                
+                iterator.next = function() {
+                    return this.list[this.position++];
+                };
+
+                return iterator;
+            }
+
+            function chainRequestsAux() {
+                if (! iterator.hasNext()) {
+                    onFinished();
+                    return;
+                }
+
+                var url = iterator.next();
+                HD_.Ajax.makeRequest(requestType, url, function fullOnSuccess(responseText) {
+                    onSuccess(url, responseText);
+
+                    chainRequestsAux();
+                }, function onError() {
+                    console.log("_chainRequests - Ajax Error: " + url);
+                }, function onFinished() {
+
+                });
+            }
+
+            var iterator = createArrayIterator(urls);
+            chainRequestsAux();
+        }
+    };
+})();
+HD_.Debug = (function() {
+
+    var _localhostName = 'localhost';
+    var _fileProtocolName = 'file:';
+
+    return {
+        isLocalHost : function() {
+            return location.hostname === _localhostName;
+        },
+
+        isFileProtocol : function() {
+            return location.protocol === _fileProtocolName;
+        },
+
+        // Affiche un avertissement clignotant si on travaille en local
+        // c'est-à-dire si l'hote est 'localhost' ou si le protocole est 'file:'
+        persistentLocalWarnings : function() {
+
+            function createWarning(name) {
+
+                function buildSpan(warningName, blink) {
+                    var warningSpan = document.createElement('span');
+                    warningSpan.style.backgroundColor = 'red';
+                    warningSpan.style.marginLeft = '10px';
+                    warningSpan.innerHTML = warningName;
+                    return warningSpan;
+                }
+
+                function blinkWarning() {
+                    var warningSpan = warning.span;
+                    warningSpan.style.visibility=(warningSpan.style.visibility === 'visible') ? 'hidden' : 'visible';
+                }
+
+                var warning = Object.create(null);
+                warning.span = buildSpan(name);
+
+                if (true) {
+                    setInterval(blinkWarning,500);
+                }
+
+                return warning;
+            }
+
+            var warnings = [];
+            if (this.isLocalHost()) {
+                warnings.push(createWarning("localhost"));
+            }
+            if (this.isFileProtocol()) {
+                warnings.push(createWarning("file:"));
+            }
+
+            var warningsContainer = document.createElement("div");
+            warnings.forEach(function(warning) {
+                warningsContainer.appendChild(warning.span);
+            });
+            document.body.appendChild(warningsContainer);
+        }
+    };
+})();
 // http://stackoverflow.com/questions/12718210/how-to-save-file-from-textarea-in-javascript-with-a-name?lq=1
 HD_.Download = (function() {
 
