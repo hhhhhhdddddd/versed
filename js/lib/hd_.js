@@ -119,6 +119,7 @@ HD_.Debug = (function() {
             }
 
             var warningsContainer = document.createElement("div");
+            warningsContainer.innerHTML = "HD_.Debug: ";
             warnings.forEach(function(warning) {
                 warningsContainer.appendChild(warning.span);
             });
