@@ -9,8 +9,8 @@ versed.textVersionsPanel = (function() {
 
             textVersionsPanel.onAddTextVersion = function(textVersion) {
                 var textVersionPanel = versed.textVersionPanel.create(textVersion);
-                textVersionsPanel.addPanelElement(textVersionPanel);
-                textVersionsPanel.refreshPanel();
+                this.addPanelElement(textVersionPanel);
+                this.refreshPanel();
             };
 
             return textVersionsPanel;
