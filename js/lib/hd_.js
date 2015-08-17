@@ -1,5 +1,66 @@
+// build 20150817_150123
 HD_ = (function() {
     return {};
+})();
+HD_.ArrayCollection = (function() {
+
+    return {
+
+        create : function() {
+            var collection = Object.create(null);
+            collection._elements = [];
+
+            HD_._Collection.initCollection(collection);
+
+            collection.addElement = function(element) {
+                this._elements.push(element);
+                return element;
+            };
+
+            collection.eachElement = function(fun) {
+                this._elements.forEach(function(element) {
+                    fun(element);
+                });
+            };
+
+            return collection;
+        }
+    };
+})();
+HD_.MapCollection = (function() {
+
+    return {
+
+        create : function() {
+            var collection = Object.create(null);
+            collection._elements = {};
+
+            HD_._Collection.initCollection(collection);
+
+            collection.addElement = function(key, element) {
+                this._elements[ key ] = element;
+            };
+
+            collection.eachElement = function(fun) {
+                for (var propName in this._elements) {
+                    fun(this._elements[ propName ]);
+                }
+            };
+
+            return collection;
+        }
+    };
+})();
+HD_._Collection = (function() {
+
+    return {
+
+        initCollection : function(collection) {
+            collection.getElement =  function(key) {
+                return this._elements[ key ];
+            };
+        }
+    };
 })();
 HD_.Ajax = (function() {
 
@@ -26,7 +87,7 @@ HD_.Ajax = (function() {
             httpRequest.send();
         },
 
-        chainRequests : function(requestType, urls, onSuccess, onFinished, onError) {
+        chainRequests : function(requestType, urls, onEachSuccess, onEachFinished, onEachError, onAllFinished) {
 
             function createArrayIterator(anArray) {
                 var iterator = Object.create(null);
@@ -46,19 +107,27 @@ HD_.Ajax = (function() {
 
             function chainRequestsAux() {
                 if (! iterator.hasNext()) {
-                    onFinished();
+                    if (onAllFinished) {
+                        onAllFinished();
+                    }
                     return;
                 }
 
                 var url = iterator.next();
-                HD_.Ajax.makeRequest(requestType, url, function fullOnSuccess(responseText) {
-                    onSuccess(url, responseText);
+                HD_.Ajax.makeRequest(requestType, url, function onEverySuccess(responseText) {
+                    onEachSuccess(url, responseText);
 
                     chainRequestsAux();
-                }, function onError() {
-                    console.log("_chainRequests - Ajax Error: " + url);
-                }, function onFinished() {
-
+                }, function onEveryError() {
+                    console.log("HD_.chainRequests - error on processing request: " + url);
+                    if (onEachError) {
+                        onEachError();
+                    }
+                }, function onEveryFinished() {
+                    console.log("HD_.chainRequests - finished processing request: " + url);
+                    if (onEachFinished) {
+                        onEachFinished();
+                    }
                 });
             }
 
@@ -171,25 +240,14 @@ HD_.HorizontalPanel = (function() {
 
     return {
 
-        create : function(elements, name) {
-            var hPanel = HD_._PanelComposite.create(elements, name, "hPanel");
-
-            hPanel.buildPanelEmptyTable = function() {
-                return HD_._DomTk.buildEmptyTable(1, this.getNumberOfElements());
-            };
-
-            hPanel.setPanelTableCell = function(index, domNode) {
-                HD_._DomTk.setDomTableCell(this._panelContainer,0 , index, domNode);
-            };
-
+        create : function(elements, name, style) {
+            var hPanel = HD_._StackPanel.create("horizontal", elements, name, style);
             return hPanel;
         }
     };
 
 })();
 HD_.PanelField = (function() {
-
-    var index = 0;
 
     function _findHtmlInputValue(node) {
         return node.value;
@@ -198,12 +256,12 @@ HD_.PanelField = (function() {
     var _types = {
         list : {
             findDomValue : function() {
-                return this.domNode.options[this.domNode.selectedIndex].value;
+                return this._panelDomNode.options[this._panelDomNode.selectedIndex].value;
             },
             buildDomElement : function() {
                 var select = document.createElement("select");
                 var option = null;
-                this.getValues().forEach(function(value) {
+                this.values.forEach(function(value) {
                     option = document.createElement("option");
                     option.setAttribute("value", value.value);
                     option.innerHTML = value.label;
@@ -218,7 +276,7 @@ HD_.PanelField = (function() {
                 return HD_._DomTk.buildTextInput(5, null);
             },
             findDomValue : function() {
-                return parseInt(_findHtmlInputValue(this.domNode), 10);
+                return parseInt(_findHtmlInputValue(this._panelDomNode), 10);
             }
         },
 
@@ -228,7 +286,7 @@ HD_.PanelField = (function() {
                 return fileInput;
             },
             findDomValue : function() {
-                return _findHtmlInputValue(this.domNode);
+                return _findHtmlInputValue(this._panelDomNode);
             },
             //Retrieve the first (and only!) File from the FileList object
             change : function(evt, field) {
@@ -257,7 +315,7 @@ HD_.PanelField = (function() {
                 return button;
             },
             findDomValue : function() {
-                return _findHtmlInputValue(this.domNode);
+                return null;
             }
         },
 
@@ -269,10 +327,10 @@ HD_.PanelField = (function() {
                 return textArea;
             },
             findDomValue : function() {
-                return _findHtmlInputValue(this.domNode);
+                return _findHtmlInputValue(this._panelDomNode);
             },
             setFieldContent : function(content) {
-                this.domNode.value = content;
+                this._panelDomNode.value = content;
             }
         },
 
@@ -282,105 +340,105 @@ HD_.PanelField = (function() {
                 return stringInput;
             },
             findDomValue : function() {
-                return _findHtmlInputValue(this.domNode);
+                return _findHtmlInputValue(this._panelDomNode);
             },
             setFieldContent : function(content) {
-                this.domNode.value = content;
+                this._panelDomNode.value = content;
+            }
+        },
+
+        textDisplay : {
+            buildDomElement : function() {
+                var div = HD_._DomTk.createDomElement("div");
+                return div;
+            },
+            setParentStyle : function() {
+                if ( this._style.verticalAlign ) {
+                    this.parentContainerStyle['verticalAlign'] = "top";
+                }
+            },
+            findDomValue : function() {
+                return "textDisplay: findDomValue todo";
+            },
+            setFieldContent : function(content) {
+                var that = this;
+                var paragraph = null;
+                content.split("\n").forEach(function(line) {
+                    paragraph = HD_._DomTk.createDomElement("p");
+                    paragraph.innerHTML = line;
+                    that._panelDomNode.appendChild(paragraph);
+                });
+            }
+        },
+
+        image : {
+            buildDomElement : function() {
+                var img = HD_._DomTk.createDomElement("img");
+                return img;
+            },
+            findDomValue : function() {
+                return null;
+            },
+            setFieldContent : function(content) {
+                this._panelDomNode.setAttribute('src', content);
             }
         }
     };
 
     return {
-        /*
-        data === {
-            name : string,
-            type : string,
-            values : array,
-            eventListeners : array,
-            label: string,
-            innerLabel: string,
-            noLabel : boolean
-        }
-        */
         create : function(data) {
             var field = Object.create(_types[data.type]);
-            HD_._PanelLeaf.init(field, data.name, "fPanel");
-            field.name = data.name;
-            field.type = data.type;
+            HD_._Panel.init(field, data.name, "fieldPanel", data.style);
+
             field.values = data.values;
             field.eventListeners = data.eventListeners;
-            field.noLabel = data.noLabel;
-            field.label = data.label;
             field.innerLabel = data.innerLabel;
-            field.box = data.box;
             field.handler = data.handler;
             field.height = data.height;
             field.width = data.width;
             field.initValue = data.initValue;
+            field.type = data.type;
+            field.parentContainerStyle = {};
 
-            field.getValues = function() {
-                return this.values;
-            };
-
-            // Nécessite getValues()
-            field.domNode = field.buildDomElement();
-
-            if (data.initValue) {
-                field.setFieldContent(data.initValue);
+            if (field.setParentStyle) {
+                field.setParentStyle();
             }
 
-            // Nécessite buildDomElement()
-            if (data.eventListeners) {
-                data.eventListeners.forEach(function(eventListener) {
-                    var listener = _types[data.type][eventListener.name];
-                    if (listener) {
-                        field.domNode.addEventListener(eventListener.name, function(evt) {
-                            listener(evt, field);
-                            eventListener.handler(evt);
-                        },
-                        false);
-                    }
-                });
-            }
+            field.buildPanelDomNode = function() {
+                var that = this;
 
-            field.getName = function() {
-                return this.name;
+                that._panelDomNode = that.buildDomElement();
+
+                if (data.initValue) {
+                    that.setFieldContent(that.initValue);
+                }
+
+                if (that.eventListeners) {
+                    that.eventListeners.forEach(function(eventListener) {
+                        var listener = _types[that.type][eventListener.name];
+                        if (listener) {
+                            that._panelDomNode.addEventListener(eventListener.name, function(evt) {
+                                listener(evt, that);
+                                eventListener.handler(evt);
+                            },
+                            false);
+                        }
+                    });
+                }
+
+                
+                return that._panelDomNode;
             };
 
-            field.getType = function() {
-                return this.type;
+            field.findVerifyingPanel = function(predicat) {
+                // Rien de plus à faire que ce qui est fait dans panel.findPanel()
             };
 
-            field.buildDomNode = function() {
-                this._panelContainer = this.domNode;
-                return this._panelContainer;
-            };
-
-            field.getPostChangeValue = function() {
-                return this.postChangeValue;
-            };
-
-            field.getLabel = function() {
-                return "label" + index++;
-            };
-
-            field.hasLabel = function() {
-                return (typeof this.noLabel === "undefined") || (! this.noLabel);
-            };
-
-            field.getBoxName = function() {
-                return this.box;
+            field.applyPanelTreeStyle = function(domNode) {
+                // Rien de plus à faire que ce qui est fait dans panel.findPanel()
             };
 
             return field;
-        },
-
-        findDomValue : function(type, node) {
-            return _types[type].getNodeValue(node);
-        },
-
-        buildDomElement : function(field) {
-            return _types[type].buildDomElement(type);
         }
     };
 
@@ -389,17 +447,8 @@ HD_.VerticalPanel = (function() {
 
     return {
 
-        create : function(elements, name) {
-            var vPanel = HD_._PanelComposite.create(elements, name, "vPanel");
-
-            vPanel.buildPanelEmptyTable = function() {
-                return HD_._DomTk.buildEmptyTable(this.getNumberOfElements(), 1);
-            };
-
-            vPanel.setPanelTableCell = function(index, domNode) {
-                HD_._DomTk.setDomTableCell(this._panelContainer,index, 0, domNode);
-            };
-
+        create : function(elements, name, style) {
+            var vPanel = HD_._StackPanel.create("vertical", elements, name, style);
             return vPanel;
         }
     };
@@ -444,6 +493,12 @@ HD_._DomTk = (function() {
             parent.appendChild(child);
         },
 
+        applyStyle : function(domNode, style) {
+            for (var styleName in style) {
+                domNode.style[styleName] = style[styleName];
+            }
+        },
+
         // Tableaux
 
         buildEmptyTable : function(rows, columns) {
@@ -461,13 +516,18 @@ HD_._DomTk = (function() {
             return table;
         },
 
-        setDomTableCell : function(table, row, column, domNode) {
+        getDomTableCell : function(table, row, column, domNode) {
             var tableChildren = table.children; // [body]
             var tableBody = tableChildren[0];
             var bodyChildren = tableBody.children; // [tr, tr, ...]
             var tableRow = bodyChildren[row];
             var rowChildren = tableRow.children; // [td, td, ...]
             var tableCell = rowChildren[column];
+            return tableCell;
+        },
+
+        setDomTableCell : function(table, row, column, domNode) {
+            var tableCell = this.getDomTableCell(table, row, column);
             this.appendDomElement(tableCell, domNode);
         }
 
@@ -478,17 +538,23 @@ HD_._Panel = (function() {
 
     var _generatedName = 0;
 
+    // todo: plante sur rafraichissement de la racine (mainPanel)
     function _findParentDomNode(panel) {
-        return panel._panelContainer.parentElement;
+        return panel._panelDomNode.parentElement;
     }
 
     return {
 
-        init : function(panel, name, className) {
-            panel._panelContainer = null;
+        init : function(panel, name, className, style) {
+            panel._panelDomNode = null;
             panel._name = name ? name : "";
             panel._className = className;
             panel._parent = null;
+            panel._style = style;
+
+            panel.buildPanelDomNode = function() {
+                alert("HD_._Panel -  " + this._className + " has no buildPanelDomNode() method.");
+            };
 
             panel.setPanelParent = function(panelParent) {
                 this._parent = panelParent;
@@ -510,14 +576,23 @@ HD_._Panel = (function() {
             };
 
             panel.buildDomNode = function() {
-                alert("HD_._Panel -  " + this._className + " has no buildDomNode() method.");
+                var domNode = this.buildPanelDomNode();
+                this.applyPanelStyle(domNode);
+                return domNode;
+            };
+
+            panel.applyPanelStyle = function(domNode) {
+                this.applyPanelTreeStyle(domNode);
+                if (this._style) {
+                    HD_._DomTk.applyStyle(domNode, this._style);
+                }
             };
 
             panel.refreshPanel = function() {
                 var parent = _findParentDomNode(this);
-                parent.removeChild(this._panelContainer);
-                this._panelContainer = this.buildDomNode();
-                parent.appendChild(this._panelContainer);
+                parent.removeChild(this._panelDomNode);
+                this._panelDomNode = this.buildPanelDomNode();
+                parent.appendChild(this._panelDomNode);
             };
 
             panel.getName = function() {
@@ -525,33 +600,24 @@ HD_._Panel = (function() {
             };
 
             panel.show = function() {
-                this._panelContainer.style.display = "block";
+                this._panelDomNode.style.display = "block";
             };
 
             panel.hide = function() {
-                this._panelContainer.style.display = "none";
+                this._panelDomNode.style.display = "none";
             };
 
             panel.removePanel = function() {
                 var parent = _findParentDomNode(this);
-                parent.removeChild(this._panelContainer);
+                parent.removeChild(this._panelDomNode);
             };
 
             // Retourne le panneau vérifiant le prédicat passé en argument.
-            // NB. fonction récursive
             panel.findPanel = function(predicat) {
                 if (predicat(this)) {
                     return this;
                 }
-                else if (this._panelElements) { // c'est un sous-arbre
-                    for (var i = 0; i < this._panelElements.length; i++) {
-                        var element = this._panelElements[i];
-                        var res = element.findPanel(predicat);
-                        if (res) {
-                            return res;
-                        }
-                    }
-                }
+                return this.findVerifyingPanel(predicat);
             };
             
             panel.findPanelByName = function(name) {
@@ -565,79 +631,146 @@ HD_._Panel = (function() {
     };
 
 })();
-HD_._PanelComposite = (function() {
+// Un panneau à une direction horizontale ou verticale
+HD_._StackPanel = (function() {
 
     return {
 
-        create : function(elements, name, className) {
-            var panelComposite = Object.create(null);
-            HD_._Panel.init(panelComposite, name, className);
-            panelComposite._panelElements = [];
-                        
-            panelComposite.addPanelElement = function(panelElt) {
+        create : function(direction, elements, name, style) {
+            var stackPanel = Object.create(null);
+            HD_._Panel.init(stackPanel, name, direction + 'Panel', style);
+
+            stackPanel._panelElements = [];
+            stackPanel._cellsStyle = [];
+
+            if (direction === "horizontal") {
+                stackPanel.getNumberOfRows = function(index) {
+                    return 1;
+                };
+                stackPanel.getNumberOfColumns = function(index) {
+                    return this.getNumberOfElements();
+                };
+                stackPanel.getRowIndex = function(index) {
+                    return 0;
+                };
+                stackPanel.getColumnIndex = function(index) {
+                    return index;
+                };
+            }
+            else if (direction === "vertical") {
+                stackPanel.getNumberOfRows = function(index) {
+                    return this.getNumberOfElements();
+                };
+                stackPanel.getNumberOfColumns = function(index) {
+                    return 1;
+                };
+                stackPanel.getRowIndex = function(index) {
+                    return index;
+                };
+                stackPanel.getColumnIndex = function(index) {
+                    return 0;
+                };
+            }
+            else {
+                alert("HD_._StackPanel.create: direction '" + direction + "' not defined");
+            }
+            
+            stackPanel.addPanelElement = function(panelElt) {
+
+                function addCellStyle(stackPanel, cellStyle, cellIndex) {
+                    if (cellStyle) {
+                        stackPanel._cellsStyle.push({
+                            cellNumber: cellIndex,
+                            style: cellStyle
+                        });
+                    }
+                }
+
                 panelElt.setPanelParent(this);
+                addCellStyle(this, panelElt.parentContainerStyle, this._panelElements.length);
                 this._panelElements.push(panelElt);
+                return panelElt;
             };
 
             // Nécessite addPanelElement
             if (elements) {
                 elements.forEach(function(elt) {
-                    panelComposite.addPanelElement(elt);
+                    stackPanel.addPanelElement(elt);
                 });
             }
 
-            panelComposite.eachPanelElement = function(fun) {
+            stackPanel.applyPanelTreeStyle = function(domNode) {
+                var that = this;
+
+                // On ajoute les styles que l'enfant impose à son container dom parent.
+                // NB. Pas à son _Panel parent mais à son container dom parent.
+                stackPanel._cellsStyle.forEach(function(cellStyleData) {
+                    var tableCell = that.getPanelTableCell(cellStyleData.cellNumber);
+                    HD_._DomTk.applyStyle(tableCell, cellStyleData.style);
+                });
+            };
+
+            stackPanel.addAndShow = function(panelElt) {
+                this.addPanelElement(panelElt);
+                var eltNode = panelElt.buildPanelDomNode();
+                this._panelDomNode.appendChild(eltNode);
+            };
+
+            stackPanel.eachPanelElement = function(fun) {
                 this._panelElements.forEach(function(panelElt) {
                     fun(panelElt);
                 });
             };
 
-            panelComposite.getChildPanel = function(i) {
+            stackPanel.getChildPanel = function(i) {
                 return this._panelElements[i];
             };
 
-            panelComposite.clearPanelElements = function() {
+            stackPanel.clearPanelElements = function() {
                 this._panelElements = [];
             };
 
-            panelComposite.buildDomNode = function() {
+            stackPanel.buildPanelDomNode = function() {
                 var that = this;
-                that._panelContainer = that.buildPanelEmptyTable();
-                that._panelContainer.setAttribute("name", that._name);
-                HD_._DomTk.appendClassName(that._panelContainer, that._className);
+                that._panelDomNode = that.buildPanelEmptyTable();
+                that._panelDomNode.setAttribute("name", that._name);
+                HD_._DomTk.appendClassName(that._panelDomNode, that._className);
                 that._panelElements.forEach(function(panelElement, index) {
                     var domNode = panelElement.buildDomNode();
                     domNode.setAttribute("parentPanel", that._name);
-                    domNode.setAttribute("index", index);
-                    that.setPanelTableCell(index, domNode);
+                    var tableCell = that.getPanelTableCell(index);
+                    tableCell.appendChild(domNode);
                 });
-                return that._panelContainer;
+                return that._panelDomNode;
             };
 
-            panelComposite.getNumberOfElements = function() {
+            stackPanel.getNumberOfElements = function() {
                 return this._panelElements.length;
             };
 
-            panelComposite.buildPanelEmptyTable = function() {
-                alert("HD_._PanelComposite - Panel " + this._className + "has no buildPanelEmptyTable() method.");
+            stackPanel.findVerifyingPanel = function(predicat) {
+                for (var i = 0; i < this._panelElements.length; i++) {
+                    var element = this._panelElements[i];
+                    var res = element.findPanel(predicat);
+                    if (res) {
+                        return res;
+                    }
+                }
             };
 
-            panelComposite.setPanelTableCell = function(index, domNode) {
-                alert("HD_._PanelComposite - Panel " + this._className + "has no setPanelTableCell() method.");
+            stackPanel.buildPanelEmptyTable = function() {
+                return HD_._DomTk.buildEmptyTable(this.getNumberOfRows(), this.getNumberOfColumns());
             };
 
-            return panelComposite;
-        }
-    };
+            stackPanel.setPanelTableCell = function(index, domNode) {
+                HD_._DomTk.setDomTableCell(this._panelDomNode,this.getRowIndex(index) , this.getColumnIndex(index), domNode);
+            };
 
-})();
-HD_._PanelLeaf = (function() {
+            stackPanel.getPanelTableCell = function(index) {
+                return HD_._DomTk.getDomTableCell(this._panelDomNode,this.getRowIndex(index) , this.getColumnIndex(index));
+            };
 
-    return {
-
-        init : function(panelLeaf, name, className) {
-            HD_._Panel.init(panelLeaf, name, className);
-            return panelLeaf;
+            return stackPanel;
         }
     };
 
