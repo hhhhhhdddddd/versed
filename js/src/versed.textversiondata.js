@@ -7,9 +7,13 @@ versed.textVersionData = (function() {
             textVersionData.content = content;
             textVersionData.number = number;
 
-            textVersionData.getTextInputDataType = function() {return this.type;};
-            textVersionData.getTextInputDataContent = function() {return this.content;};
-            textVersionData.getNumber = function() {return this.number;};
+            textVersionData.getTextInputDataType = function() {
+                return this.type;
+            };
+
+            textVersionData.getTextInputDataContent = function() {
+                return this.content;
+            };
 
             textVersionData.setTextInputDataContent = function(content) {
                 this.content = content;
