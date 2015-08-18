@@ -110,10 +110,6 @@ versed.textVersion = (function() {
                 }
             };
 
-            textVersion.findNumberOfTokensForLine = function(lineIndex) {
-                this.getElement(lineIndex).findNumberOfTokens();
-            };
-
             textVersion.getTextInputAbbr = function() {
                 return _types[this.type].abbr;
             };
@@ -135,10 +131,6 @@ versed.textVersion = (function() {
 
             textVersion.registerTextInputObserver = function(tiObserver) {
                 this._observers.push(tiObserver);
-            };
-
-            textVersion.getTextInputPanelContent = function() {
-                return this.textarea.value;
             };
 
             textVersion.isContentEmpty = function() {
