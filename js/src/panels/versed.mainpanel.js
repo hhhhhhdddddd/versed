@@ -124,7 +124,7 @@ versed.mainPanel = (function() {
                     }
 
                     var textVersionsPanel = mainPanel.findPanelByName("textVersionsPanel");
-                    textVersions.each(function(textVersion) {
+                    textVersions.eachElement(function(textVersion) {
                         var versionPanel = textVersionsPanel.findPanelByName(versed.buildId([versed.textVersionPanel.getTVPIdPrefix() , textVersion.getIndex()]));
                         textVersion.setLines(versionPanel.findContent());
                     });

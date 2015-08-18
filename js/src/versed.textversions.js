@@ -3,17 +3,15 @@ versed.textVersions = (function() {
     return {
 
         create : function() {
-            var textVersions = Object.create(null);
+            var textVersions = HD_.ArrayCollection.create();
                        
-            textVersions._versions = [];
             textVersions._index = 0;
             textVersions._listeners = [];
 
             textVersions.addTextVersion = function(type, content) {
                 var index = this._index++;
-                var that = this;
                 var version = versed.textVersion.create(index, type, content);
-                this._versions.push(version);
+                this.addElement(version);
                 this._listeners.forEach(function(listener) {
                     listener.onAddTextVersion(version);
                 });
@@ -30,28 +28,18 @@ versed.textVersions = (function() {
 
             textVersions.findLines = function(lineNumber) {
                 var lines = [];
-                this._versions.forEach(function(textVersion) {
+                this.eachElement(function(textVersion) {
                     lines.push(textVersion.findLine(lineNumber));
                 });
                 return lines;
             };
 
-            textVersions.getInput = function(index) {
-                return this._versions[index];
-            };
-
             textVersions.getParsableContents = function() {
                 var contents = "";
-                this.each(function(version) {
+                this.eachElement(function(version) {
                     contents += "#" + version.getType() + "\n" + version.buildTextInputText() + "\n";
                 });
                 return contents;
-            };
-
-            textVersions.each = function(fun) {
-                this._versions.forEach(function(version) {
-                    fun(version);
-                });
             };
 
             textVersions.eachInputTypes = function(fun) {
@@ -60,7 +48,7 @@ versed.textVersions = (function() {
             
             textVersions.findNumberOfInput = function(type) {
                 var number = 0;
-                this.each(function(version) {
+                this.eachElement(function(version) {
                     if (version.getType() === type) {
                         number++;
                     }
@@ -71,7 +59,7 @@ versed.textVersions = (function() {
             // Retourne le nombre maximum de lignes
             textVersions.findMaxNumberOfLines = function() {
                 var max = -1;
-                this.each(function(version) {
+                this.eachElement(function(version) {
                     var numberOfLines = version.getNumberOfLines();
                     if (numberOfLines > max) {
                         max = numberOfLines;
@@ -83,7 +71,7 @@ versed.textVersions = (function() {
             // Retourne le nombre maximum de tokens pour une ligne
             textVersions.findMaxNumberOfTokens = function(lineIndex) {
                 var max = -1;
-                this.each(function(version) {
+                this.eachElement(function(version) {
                     var numberOfLines = version.findMaxNumberOfTokens(lineIndex);
                     if (numberOfLines > max) {
                         max = numberOfLines;
@@ -93,17 +81,14 @@ versed.textVersions = (function() {
             };
 
             textVersions.versionsEmpty = function() {
-                for (var i = 0; i < this._versions.length; i++) {
-                    var version = this._versions[i];
+                var length = this.getSize();
+                for (var i = 0; i < length; i++) {
+                    var version = this.getElement(i);
                     if (! version.isContentEmpty()) {
                         return false;
                     }
                 }
                 return true;
-            };
-
-            textVersions.isTextInputsEmpty = function() {
-                return this._versions.length === 0;
             };
 
             textVersions.registerTextInputsObserver = function(listener) {

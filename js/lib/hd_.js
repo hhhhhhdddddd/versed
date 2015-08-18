@@ -1,4 +1,4 @@
-// build 20150817_150123
+// build 20150818_074951
 HD_ = (function() {
     return {};
 })();
@@ -12,7 +12,7 @@ HD_.ArrayCollection = (function() {
 
             HD_._Collection.initCollection(collection);
 
-            collection.addElement = function(element) {
+            collection.addCollectionElement = function(element) {
                 this._elements.push(element);
                 return element;
             };
@@ -37,7 +37,7 @@ HD_.MapCollection = (function() {
 
             HD_._Collection.initCollection(collection);
 
-            collection.addElement = function(key, element) {
+            collection.addCollectionElement = function(key, element) {
                 this._elements[ key ] = element;
             };
 
@@ -56,8 +56,19 @@ HD_._Collection = (function() {
     return {
 
         initCollection : function(collection) {
+            collection._size = 0;
+
             collection.getElement =  function(key) {
                 return this._elements[ key ];
+            };
+
+            collection.addElement =  function(key) {
+                this._size++;
+                return this.addCollectionElement(key);
+            };
+
+            collection.getSize =  function(key) {
+                return this._size;
             };
         }
     };
