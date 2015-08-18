@@ -8,7 +8,7 @@ versed.lineAggregatePanel = (function() {
         );
 
         for (var i = 0; i < numberOfTokensStr; i++) {
-            var lineToken = line.getLineToken(i);
+            var lineToken = line.getElement(i);
             var tokenPanel = HD_.PanelField.create({
                 name: versed.buildId(["tokenPanel", versionIndex, linesIndex, i]), // i est l'index du token
                 type: "string",
@@ -39,7 +39,7 @@ versed.lineAggregatePanel = (function() {
         });
         lines.forEach(function(line) {
             var type = line.getLineType();
-            var lineTokenNumber = line.getNumberOfTokens();
+            var lineTokenNumber = line.getSize();
             var currentTokenNumber = constructionData[line.getLineType()][_numberOfTokensStr];
             constructionData[line.getLineType()][_numberOfTokensStr] =
                 (lineTokenNumber > currentTokenNumber) ? lineTokenNumber: currentTokenNumber;

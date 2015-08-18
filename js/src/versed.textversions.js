@@ -60,7 +60,7 @@ versed.textVersions = (function() {
             textVersions.findMaxNumberOfLines = function() {
                 var max = -1;
                 this.eachElement(function(version) {
-                    var numberOfLines = version.getNumberOfLines();
+                    var numberOfLines = version.getSize();
                     if (numberOfLines > max) {
                         max = numberOfLines;
                     }

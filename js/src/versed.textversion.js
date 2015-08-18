@@ -80,27 +80,28 @@ versed.textVersion = (function() {
         return text.split('\n');
     }
 
-    function _buildLines(textVersion, text) {
+    function _setLines(textVersion, text) {
+        textVersion.clearCollection();
+
         var stringLines = _buildTextInputStringLines(text);
-        var textVersionLines = [];
         stringLines.forEach(function(str, index) {
             var tokens = _types[textVersion.type].parser(str);
             textVersionLine = versed.textVersionLine.create(index, tokens, textVersion.type, _types[textVersion.type].inputFieldWidth);
-            textVersionLines.push(textVersionLine);
+            textVersion.addElement(textVersionLine);
         });
-        return textVersionLines;
     }
 
     return {
         create : function(index, type, text) {
-            var textVersion = Object.create(null);
+            var textVersion = HD_.ArrayCollection.create();
             textVersion.index = index;
             textVersion.type = type;
             textVersion._observers = [];
-            textVersion._textVersionLines = _buildLines(textVersion, text);
+
+            _setLines(textVersion, text);
 
             textVersion.findLine = function(lineNumber) {
-                var line = this._textVersionLines[lineNumber];
+                var line = this.getElement(lineNumber);
                 if (!line) {
                     return versed.textVersionLine.createEmptyLine(lineNumber, this.type, _types[textVersion.type].inputFieldWidth);
                 }
@@ -109,16 +110,8 @@ versed.textVersion = (function() {
                 }
             };
 
-            textVersion.getFullText = function() {
-                return this._textVersionLines.length;
-            };
-
-            textVersion.getNumberOfLines = function() {
-                return this._textVersionLines.length;
-            };
-
             textVersion.findNumberOfTokensForLine = function(lineIndex) {
-                this._textVersionLines[lineIndex].findNumberOfTokens();
+                this.getElement(lineIndex).findNumberOfTokens();
             };
 
             textVersion.getTextInputAbbr = function() {
@@ -126,7 +119,7 @@ versed.textVersion = (function() {
             };
 
             textVersion.setLines = function(text) {
-                textVersion._textVersionLines = _buildLines(this, text);
+                _setLines(this, text);
                 this._observers.forEach(function(obs) {
                     obs.onSetTextInputContent(text);
                 });
@@ -134,7 +127,7 @@ versed.textVersion = (function() {
 
             textVersion.buildTextInputText = function() {
                 var fullText = [];
-                this._textVersionLines.forEach(function(line) {
+                this.eachElement(function(line) {
                     fullText.push(line.buildText());
                 });
                 return versed.textVersion.joinLines(fullText);
