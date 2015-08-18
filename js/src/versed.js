@@ -12,8 +12,6 @@ versed = (function () {
             return mainPanel.buildDomNode();
         },
 
-        appContainer : document.createElement("div"),
-        
         buildId : function(idElements) {
             var id = "";
             idElements.forEach(function(idElt, index) {
