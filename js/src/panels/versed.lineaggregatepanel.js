@@ -3,9 +3,7 @@ versed.lineAggregatePanel = (function() {
     var _numberOfTokensStr = "numberOfTokens";
 
     function _buildLinePanel(line, numberOfTokensStr, versionIndex, linesIndex) {
-        var linePanel = HD_.HorizontalPanel.create(
-            [], versed.buildId(["linePanel", line.getLineNumber(), versionIndex])
-        );
+        var linePanel = HD_.HorizontalPanel.create({name: versed.buildId(["linePanel", line.getLineNumber(), versionIndex])});
 
         for (var i = 0; i < numberOfTokensStr; i++) {
             var lineToken = line.getElement(i);
@@ -15,7 +13,7 @@ versed.lineAggregatePanel = (function() {
                 initValue: lineToken ? lineToken : "",
                 width: line.getFieldWidth()
             });
-            linePanel.addPanelElement(tokenPanel);
+            linePanel.pushPanelElement(tokenPanel);
         }
         
         linePanel.findLinePanelContent = function() {
@@ -50,9 +48,7 @@ versed.lineAggregatePanel = (function() {
     return {
 
         create : function(lines, linesIndex) {
-            var lineAggregatePanel = HD_.VerticalPanel.create(
-                [], versed.buildId(["lineAggregatePanel", linesIndex])
-            );
+            var lineAggregatePanel = HD_.VerticalPanel.create({name: versed.buildId(["lineAggregatePanel", linesIndex])});
 
             var constructionData = _buildConstructionData(lines);
             lines.forEach(function(line, versionIndex) {
@@ -61,7 +57,7 @@ versed.lineAggregatePanel = (function() {
                     constructionData[line.getLineType()][_numberOfTokensStr],
                     versionIndex, linesIndex
                 );
-                lineAggregatePanel.addPanelElement(linePanel);
+                lineAggregatePanel.pushPanelElement(linePanel);
             });
 
             lineAggregatePanel.findLinePanel = function(versionNumber) {

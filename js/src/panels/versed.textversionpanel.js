@@ -38,10 +38,9 @@ versed.textVersionPanel = (function() {
                 }
             });
 
-            var textVersionPanel = HD_.VerticalPanel.create([
-                textField,
-                updateButton
-            ], versed.buildId([versed.textVersionPanel.getTVPIdPrefix() , textVersion.getIndex()]));
+            var textVersionPanel = HD_.VerticalPanel.create({name: versed.buildId([versed.textVersionPanel.getTVPIdPrefix() , textVersion.getIndex()])});
+            textVersionPanel.pushPanelElement(textField);
+            textVersionPanel.pushPanelElement(updateButton);
 
             textVersionPanel.onSetTextInputContent = function(content) {
                 textField.setFieldContent(content);
@@ -49,7 +48,7 @@ versed.textVersionPanel = (function() {
 
             textVersionPanel.onAddTextVersion = function(textVersion) {
                 var textVersionPanel = versed.textVersionPanel.create(textVersion);
-                textVersionsPanel.addPanelElement(textVersionPanel);
+                textVersionsPanel.pushPanelElement(textVersionPanel);
             };
 
             textVersionPanel.findContent = function() {

@@ -1,15 +1,12 @@
 versed.textVersionsPanel = (function() {
 
     return {
-        create : function(name) {
-            var textVersionsPanel = HD_.HorizontalPanel.create(
-                [],
-                name
-            );
+        create : function(data) {
+            var textVersionsPanel = HD_.HorizontalPanel.create({name: data.name});
 
             textVersionsPanel.onAddTextVersion = function(textVersion) {
                 var textVersionPanel = versed.textVersionPanel.create(textVersion);
-                this.addPanelElement(textVersionPanel);
+                this.pushPanelElement(textVersionPanel);
                 this.refreshPanel();
             };
 

@@ -133,7 +133,7 @@ versed.mainPanel = (function() {
                     var numberOfLines = textVersions.findMaxNumberOfLines();
                     for (var i = 0; i < numberOfLines; i++) {
                         var lineAggregatePanel = versed.lineAggregatePanel.create(textVersions.findLines(i), i);
-                        tokensInputsPanel.addPanelElement(lineAggregatePanel);
+                        tokensInputsPanel.pushPanelElement(lineAggregatePanel);
                     }
                     tokensInputsPanel.refreshPanel();
                 }
@@ -148,22 +148,24 @@ versed.mainPanel = (function() {
                 }
             });
 
-            var mainPanel = HD_.VerticalPanel.create([
-                HD_.HorizontalPanel.create([
-                    fileInputField
-                ], "fileInputPanel"),
-                HD_.HorizontalPanel.create([
-                    inputTypeField,
-                    numberOfInputsField,
-                    addTextInputsField
-                ], "addTextVersionPanel"),
-                HD_.HorizontalPanel.create([
-                    tokenInputsField,
-                    saveInputsField
-                ], "inputsMenuPanel"),
-                versed.textVersionsPanel.create("textVersionsPanel"),
-                HD_.VerticalPanel.create([], "tokensInputsPanel")
-            ], "mainPanel");
+            var fileInputPanel = HD_.HorizontalPanel.create({name: "fileInputPanel"});
+            fileInputPanel.pushPanelElement(fileInputField);
+
+            var addTextVersionPanel = HD_.HorizontalPanel.create({name: "addTextVersionPanel"});
+            addTextVersionPanel.pushPanelElement(inputTypeField);
+            addTextVersionPanel.pushPanelElement(numberOfInputsField);
+            addTextVersionPanel.pushPanelElement(addTextInputsField);
+
+            var inputsMenuPanel = HD_.HorizontalPanel.create({name: "inputsMenuPanel"});
+            inputsMenuPanel.pushPanelElement(tokenInputsField);
+            inputsMenuPanel.pushPanelElement(saveInputsField);
+
+            var mainPanel = HD_.VerticalPanel.create({name: "mainPanel"});
+            mainPanel.pushPanelElement(fileInputPanel);
+            mainPanel.pushPanelElement(addTextVersionPanel);
+            mainPanel.pushPanelElement(inputsMenuPanel);
+            mainPanel.pushPanelElement(versed.textVersionsPanel.create({name: "textVersionsPanel"}));
+            mainPanel.pushPanelElement(HD_.VerticalPanel.create({name: "tokensInputsPanel"}));
 
             return mainPanel;
         }
