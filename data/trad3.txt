@@ -89,48 +89,6 @@ pick_small_thing star give_to_someone you
 pick_with_two_hands moon give_to_someone you
 let sun everyday for you rising
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#lines
-I planted a seed and finally a fruit grow 
-Today is a great day 
-I pick a star  and give it to you 
-I pick the moon and give it to you 
-Let the sun rise for you everyday 
  
  
  
