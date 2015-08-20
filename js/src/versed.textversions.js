@@ -5,15 +5,21 @@ versed.textVersions = (function() {
         create : function() {
             var textVersions = HD_.ArrayCollection.create();
                        
-            textVersions._index = 0;
             textVersions._listeners = [];
 
             textVersions.addTextVersion = function(type, content) {
-                var index = this._index++;
+                var index = this.getSize();
                 var version = versed.textVersion.create(index, type, content);
                 this.addElement(version);
                 this._listeners.forEach(function(listener) {
                     listener.onAddTextVersion(version);
+                });
+            };
+
+            textVersions.clearTextVersions = function() {
+                this.clearCollection();
+                this._listeners.forEach(function(listener) {
+                    listener.onClearTextVersions();
                 });
             };
 

@@ -10,6 +10,10 @@ versed.textVersionsPanel = (function() {
                 this.refreshPanel();
             };
 
+            textVersionsPanel.onClearTextVersions = function() {
+                textVersionsPanel.clearPanelElements();
+            };
+
             return textVersionsPanel;
         }
     };

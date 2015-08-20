@@ -80,8 +80,7 @@ versed.mainPanel = (function() {
                         tokensInputsPanel.clearPanelElements();
                         tokensInputsPanel.refreshPanel();
 
-                        var textVersionsPanel = mainPanel.findPanelByName("textVersionsPanel");
-                        textVersionsPanel.clearPanelElements();
+                        textVersions.clearTextVersions();
                         fileInputField.readFileAsText(function onFileRead(content) {
                             var textVersionsData = _parsableTextToTextVersionsData(content);
                             textVersions.addVersionsFromData(textVersionsData);

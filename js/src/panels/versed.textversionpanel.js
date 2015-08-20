@@ -46,11 +46,6 @@ versed.textVersionPanel = (function() {
                 textField.setFieldContent(content);
             };
 
-            textVersionPanel.onAddTextVersion = function(textVersion) {
-                var textVersionPanel = versed.textVersionPanel.create(textVersion);
-                textVersionsPanel.pushPanelElement(textVersionPanel);
-            };
-
             textVersionPanel.findContent = function() {
                 return this.findPanelByName(_textVersionPanelName(textVersion.getIndex())).findDomValue();
             };
