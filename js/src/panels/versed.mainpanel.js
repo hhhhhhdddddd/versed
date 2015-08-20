@@ -5,10 +5,10 @@ versed.mainPanel = (function() {
         function createLine(lineStr) {
             var line = Object.create(null);
             line.str = lineStr;
-            line.index = 0;
+            line._index = 0;
             
             line.readOneChar = function() {
-                var charReaded = this.str.charAt(this.index++);
+                var charReaded = this.str.charAt(this._index++);
                 return charReaded;
             };
 
@@ -17,7 +17,7 @@ versed.mainPanel = (function() {
             };
 
             line.lineString = function() {
-                return this.str.slice(this.index);
+                return this.str.slice(this._index);
             };
 
             line.buildFullLine = function() {
