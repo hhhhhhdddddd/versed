@@ -3,7 +3,7 @@ versed = (function () {
     return {
         
         main : function() {
-            HD_.Debug.persistentLocalWarnings();
+            HD_.LocalWarnings.persistentLocalWarnings();
             
             var typeOfInputValues = versed.textVersions.findInputTypes();
             var textVersions = versed.textVersions.create();
