@@ -143,7 +143,7 @@ versed.mainPanel = (function() {
                 innerLabel: "Save Inputs",
                 handler: function saveInputsHandler() {
                     var contents = textVersions.getParsableContents();
-                    HD_.Download.save(contents, 'contents.txt');
+                    HD_.Download.saveEncodedData(contents, 'contents.txt');
                 }
             });
 
