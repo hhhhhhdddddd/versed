@@ -27,9 +27,8 @@ Ensuite on voit comment ça peut se passer, si c'est viable, etc.
                 _refreshFieldTexts(mainPanel);
             }, 2000);
 
-            var typeOfInputValues = versed.textVersions.findInputTypes();
             var textVersions = versed.textVersions.create();
-            var mainPanel = versed.mainPanel.create(typeOfInputValues, textVersions);
+            var mainPanel = versed.mainPanel.create(versed.textVersions.findInputTypes, textVersions);
             
             textVersions.registerTextInputsObserver(mainPanel.findPanelByName("textVersionsPanel"));
             var mainNode = mainPanel.buildDomNode();

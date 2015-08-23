@@ -68,7 +68,7 @@ versed.mainPanel = (function() {
     }
 
     return {
-        create : function(typeOfInputValues, textVersions) {
+        create : function(inputTypeValuesGetter, textVersions) {
             var fileInputField = HD_.PanelField.create({
                 name: "fileInput",
                 type: "fileSelector",
@@ -90,7 +90,7 @@ versed.mainPanel = (function() {
             var inputTypeField = HD_.PanelField.create({
                 name: "inputType",
                 type: "list",
-                values: typeOfInputValues
+                valuesGetter: inputTypeValuesGetter
             });
             var numberOfInputsField = HD_.PanelField.create({
                 name: "numberOfInputs",
