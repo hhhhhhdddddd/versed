@@ -13,7 +13,6 @@ versed.textVersionPanel = (function() {
             var textField = HD_.PanelField.create({
                 name: _textVersionPanelName(textVersion.getIndex()),
                 type: "text",
-                noLabel: true,
                 width: _cols,
                 height: _rows,
                 initValue: textVersion.buildTextInputText()
@@ -22,7 +21,10 @@ versed.textVersionPanel = (function() {
             var updateButton = HD_.PanelField.create({
                 name: "updateTextInput_" + textVersion.getIndex(),
                 type: "button",
-                innerLabel: "Update (" + textVersion.getTextInputAbbr() + ")",
+                texts : {
+                   innerLabel: [versed.tr.getTrKey('updatePar_cap') , textVersion.getTextInputAbbr()],
+                   textUpdater: versed.tr.translate
+                },
                 handler: function onUpdate() {
                     // On construit le nouveau texte de la version correspondant au panneau à partir des tokens
                     // se trouvant dans la zone d'édition.

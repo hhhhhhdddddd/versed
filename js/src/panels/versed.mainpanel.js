@@ -72,7 +72,6 @@ versed.mainPanel = (function() {
             var fileInputField = HD_.PanelField.create({
                 name: "fileInput",
                 type: "fileSelector",
-                noLabel: true,
                 eventListeners : [{
                     name : "change",
                     handler: function fileInputHandler(evt) {
@@ -91,18 +90,15 @@ versed.mainPanel = (function() {
             var inputTypeField = HD_.PanelField.create({
                 name: "inputType",
                 type: "list",
-                noLabel: true,
                 values: typeOfInputValues
             });
             var numberOfInputsField = HD_.PanelField.create({
                 name: "numberOfInputs",
-                type: "number",
-                noLabel: true
+                type: "number"
             });
             var addTextInputsField = HD_.PanelField.create({
                 name: "addTextInputs",
                 type: "button",
-                innerLabel: "Add",
                 handler: function addTextInputsHandler() {
                     var numberOfInputsField = mainPanel.findPanelByName("numberOfInputs");
                     var inputsTypeField = mainPanel.findPanelByName("inputType");
@@ -111,12 +107,19 @@ versed.mainPanel = (function() {
                     for (var i = 0; i < numberOfInputs; i++) {
                         textVersions.addTextVersion(inputsType, "");
                     }
+                },
+                texts : {
+                   innerLabel: versed.tr.getTrKey('add_cap'),
+                   textUpdater: versed.tr.translate
                 }
             });
             var tokenInputsField = HD_.PanelField.create({
                 name: "tokenInputs",
                 type: "button",
-                innerLabel: "Token Inputs",
+                texts : {
+                   innerLabel: versed.tr.getTrKey('tokensInput_cap'),
+                   textUpdater: versed.tr.translate
+                },
                 handler: function tokensInputsHandler() {
                     if (textVersions.versionsEmpty()) {
                         return;
@@ -140,7 +143,10 @@ versed.mainPanel = (function() {
             var saveInputsField = HD_.PanelField.create({
                 name: "saveInputs",
                 type: "button",
-                innerLabel: "Save Inputs",
+                texts : {
+                   innerLabel: versed.tr.getTrKey('saveInputs_cap'),
+                   textUpdater: versed.tr.translate
+                },
                 handler: function saveInputsHandler() {
                     var contents = textVersions.getParsableContents();
                     HD_.Download.saveEncodedData(contents, 'contents.txt');

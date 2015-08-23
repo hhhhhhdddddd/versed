@@ -107,7 +107,7 @@ versed.textVersions = (function() {
         findInputTypes : function() {
             var typeOfInputValues = [];
             versed.textVersion.eachTypes(function(typeName, type) {
-                typeOfInputValues.push({value: typeName, label: typeName});
+                typeOfInputValues.push({value: typeName, label: type.getVersionTypeLabel()});
             });
             return typeOfInputValues;
         }
