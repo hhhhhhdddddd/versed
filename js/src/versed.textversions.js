@@ -101,15 +101,11 @@ versed.textVersions = (function() {
                 this._listeners.push(listener);
             };
 
-            return textVersions;
-        },
+            textVersions.eachTextVersionTypes = function(fun) {
+                versed.textVersion.eachTypes(fun);
+            };
 
-        findInputTypes : function() {
-            var typeOfInputValues = [];
-            versed.textVersion.eachTypes(function(typeName, type) {
-                typeOfInputValues.push({value: typeName, label: type.getVersionTypeLabel()});
-            });
-            return typeOfInputValues;
+            return textVersions;
         }
         
     };

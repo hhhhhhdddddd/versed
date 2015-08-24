@@ -68,7 +68,7 @@ versed.mainPanel = (function() {
     }
 
     return {
-        create : function(inputTypeValuesGetter, textVersions) {
+        create : function(textVersions) {
             var fileInputField = HD_.PanelField.create({
                 name: "fileInput",
                 type: "fileSelector",
@@ -90,7 +90,20 @@ versed.mainPanel = (function() {
             var inputTypeField = HD_.PanelField.create({
                 name: "inputType",
                 type: "list",
-                valuesGetter: inputTypeValuesGetter
+                labelValuesBuilder: function() {
+                    var values = [];
+                    textVersions.eachTextVersionTypes(function(versionTypeName, versionType) {
+                        values.push(versionTypeName);
+                    });
+                    return values;
+                },
+                labelsBuilder: function() {
+                    var labels = [];
+                    textVersions.eachTextVersionTypes(function(versionTypeName, versionType) {
+                        labels.push(versed.tr.trKey(versionType.getVersionTypeLabelKey()));
+                    });
+                    return labels;
+                }
             });
             var numberOfInputsField = HD_.PanelField.create({
                 name: "numberOfInputs",
@@ -108,14 +121,16 @@ versed.mainPanel = (function() {
                         textVersions.addTextVersion(inputsType, "");
                     }
                 },
-               label: versed.tr.getTrKey('add_cap'),
-               labelUpdater: versed.tr.translate
+                labelBuilder: function() {
+                    return versed.tr.trKey('add_cap');
+                }
             });
             var tokenInputsField = HD_.PanelField.create({
                 name: "tokenInputs",
                 type: "button",
-                label: versed.tr.getTrKey('tokensInput_cap'),
-                labelUpdater: versed.tr.translate,
+                labelBuilder: function() {
+                    return versed.tr.trKey('tokensInput_cap');
+                },
                 handler: function tokensInputsHandler() {
                     if (textVersions.versionsEmpty()) {
                         return;
@@ -139,8 +154,9 @@ versed.mainPanel = (function() {
             var saveInputsField = HD_.PanelField.create({
                 name: "saveInputs",
                 type: "button",
-               label: versed.tr.getTrKey('saveInputs_cap'),
-               labelUpdater: versed.tr.translate,
+                labelBuilder: function() {
+                    return versed.tr.trKey('saveInputs_cap');
+                },
                 handler: function saveInputsHandler() {
                     var contents = textVersions.getParsableContents();
                     HD_.Download.saveEncodedData(contents, 'contents.txt');

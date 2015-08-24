@@ -31,6 +31,10 @@ versed.tr = (function() {
             return _translater.setTrKeys(translationsKeys);
         },
 
+        trKey : function(key) {
+            return versed.tr.translate(versed.tr.getTrKey(key));
+        },
+
         testTr : function(testedPanel) {
             function refreshFieldTexts(testedPanel) {
                 testedPanel.mapPanels(function(panel) {

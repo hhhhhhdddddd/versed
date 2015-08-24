@@ -21,10 +21,9 @@ versed.textVersionPanel = (function() {
             var updateButton = HD_.PanelField.create({
                 name: "updateTextInput_" + textVersion.getIndex(),
                 type: "button",
-                label : versed.tr.getTrKey('updatePar_cap'),
-                placeholdersValues: [textVersion.getTextInputAbbr()],
-                labelUpdater: function() {
-                    return versed.tr.translate(this._label, this._placeholdersValues);
+                labelBuilder : function() {
+                    return versed.tr.translate(versed.tr.trKey('updatePar_cap'), [versed.tr.trKey(textVersion.getVersionAbbrKey())]);
+
                 },
                 handler: function onUpdate() {
                     // On construit le nouveau texte de la version correspondant au panneau à partir des tokens

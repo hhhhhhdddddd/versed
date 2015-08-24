@@ -16,7 +16,7 @@ Ensuite on voit comment ça peut se passer, si c'est viable, etc.
             versed.tr.setTranslater("en", versed.tr.keys);
 
             var textVersions = versed.textVersions.create();
-            var mainPanel = versed.mainPanel.create(versed.textVersions.findInputTypes, textVersions);
+            var mainPanel = versed.mainPanel.create(textVersions);
 
             versed.tr.testTr(mainPanel);
             

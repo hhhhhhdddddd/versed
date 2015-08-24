@@ -3,11 +3,11 @@ versed.textVersion = (function() {
     var _types = {
         tokens : {
             inputSize : 5,
-            getVersionTypeAbbr : function() {
-                return versed.tr.translate(versed.tr.getTrKey('wordAbbr_cap'));
+            getVersionTypeAbbrKey : function() {
+                return versed.tr.getTrKey('wordAbbr_cap');
             },
-            getVersionTypeLabel : function() {
-                return versed.tr.translate(versed.tr.getTrKey('word_cap'));
+            getVersionTypeLabelKey : function() {
+                return versed.tr.getTrKey('word_cap');
             },
             getNumberOfInputs : function(n) {
                 return n;
@@ -68,11 +68,11 @@ versed.textVersion = (function() {
 
         lines : {
             inputSize : 100,
-            getVersionTypeAbbr : function() {
-                return versed.tr.translate(versed.tr.getTrKey('lineAbbr_cap'));
+            getVersionTypeAbbrKey : function() {
+                return versed.tr.getTrKey('lineAbbr_cap');
             },
-            getVersionTypeLabel : function() {
-                return versed.tr.translate(versed.tr.getTrKey('line_cap'));
+            getVersionTypeLabelKey : function() {
+                return versed.tr.getTrKey('line_cap');
             },
             getNumberOfInputs : function(n) {
                 return 1; // une seule input pour les lignes orientées lignes.
@@ -118,8 +118,8 @@ versed.textVersion = (function() {
                 }
             };
 
-            textVersion.getTextInputAbbr = function() {
-                return _types[this.type].getVersionTypeAbbr();
+            textVersion.getVersionAbbrKey = function() {
+                return _types[this.type].getVersionTypeAbbrKey();
             };
 
             textVersion.setLines = function(text) {
