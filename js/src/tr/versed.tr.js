@@ -1,13 +1,14 @@
 versed.tr = (function() {
 
     var _translater = null;
-    var _currentLanguage = null;
 
     return {
         setTranslater : function(language, translationsKeys) {
             _translater = HD_.Translater.create();
-            this.setLocalTr(language);
-            this.setTrKeys(translationsKeys);
+            _translater.addTranlsation("en", versed.tr.en);
+            _translater.addTranlsation("fr", versed.tr.fr);
+            _translater.setCurrentTranlsation(language);
+            _translater.setTrKeys(translationsKeys);
         },
 
         getTrKey : function(key) {
@@ -19,12 +20,11 @@ versed.tr = (function() {
         },
 
         setLocalTr : function(language) {
-            _currentLanguage = language;
-            return _translater.setLocalTr(versed.tr[language]);
+            return _translater.setCurrentTranlsation(language);
         },
 
         getCurrentLanguage : function() {
-            return _currentLanguage;
+            return _translater.getCurrentTranslationName();
         },
 
         setTrKeys : function(translationsKeys) {
