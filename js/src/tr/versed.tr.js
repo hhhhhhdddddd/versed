@@ -45,7 +45,7 @@ versed.tr = (function() {
                 });
             }
 
-            setInterval(function changeTr() {
+            setTimeout(function changeTr() {
                 var language = versed.tr.getCurrentLanguage() === "en" ? "fr" : "en" ;
 
                 versed.tr.setLocalTr(language);

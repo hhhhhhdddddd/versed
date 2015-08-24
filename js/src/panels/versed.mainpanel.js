@@ -91,18 +91,14 @@ versed.mainPanel = (function() {
                 name: "inputType",
                 type: "list",
                 labelValuesBuilder: function() {
-                    var values = [];
-                    textVersions.eachTextVersionTypes(function(versionTypeName, versionType) {
-                        values.push(versionTypeName);
+                    return textVersions.mapFunToVersionTypes(function(versionType) {
+                        return versionType.typeName;
                     });
-                    return values;
                 },
                 labelsBuilder: function() {
-                    var labels = [];
-                    textVersions.eachTextVersionTypes(function(versionTypeName, versionType) {
-                        labels.push(versed.tr.trKey(versionType.getVersionTypeLabelKey()));
+                    return textVersions.mapFunToVersionTypes(function(versionType) {
+                        return versed.tr.trKey(versionType.getVersionTypeLabelKey());
                     });
-                    return labels;
                 }
             });
             var numberOfInputsField = HD_.PanelField.create({

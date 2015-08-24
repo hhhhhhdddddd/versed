@@ -1,91 +1,98 @@
 versed.textVersion = (function() {
 
-    var _types = {
-        tokens : {
-            inputSize : 5,
-            getVersionTypeAbbrKey : function() {
-                return versed.tr.getTrKey('wordAbbr_cap');
-            },
-            getVersionTypeLabelKey : function() {
-                return versed.tr.getTrKey('word_cap');
-            },
-            getNumberOfInputs : function(n) {
-                return n;
-            },
-            parser : function(str) {
+    var _types = HD_.ArrayCollection.create();
+    _types.addElement({
+        typeName: "tokens",
+        inputSize : 5,
+        getVersionTypeAbbrKey : function() {
+            return versed.tr.getTrKey('wordAbbr_cap');
+        },
+        getVersionTypeLabelKey : function() {
+            return versed.tr.getTrKey('word_cap');
+        },
+        getNumberOfInputs : function(n) {
+            return n;
+        },
+        parser : function(str) {
 
-                function isCharacter(character) {
-                    if (character === " ") {
-                        return false;
-                    }
-                    else {
-                        return true;
-                    }
-                }
-
-                function isPonctuation(character) {
+            function isCharacter(character) {
+                if (character === " ") {
                     return false;
                 }
+                else {
+                    return true;
+                }
+            }
 
-                function addToken(tokens, token) {
-                    tokens.push(token);
-                    inToken = false;
+            function isPonctuation(character) {
+                return false;
+            }
+
+            function addToken(tokens, token) {
+                tokens.push(token);
+                inToken = false;
+            }
+
+            var tokens = [];
+            var currentToken = "";
+            var inToken = false;
+            for (var i = 0, strLength = str.length; i < strLength; i++) {
+                var currentChar = str.charAt(i);
+                var isChar = isCharacter(currentChar);
+
+                // On détermine si on entre ou si on a fini un mot.
+                if (isPonctuation(currentChar)) {
+                    addToken(tokens, "" + currentChar);
+                    continue;
                 }
 
-                var tokens = [];
-                var currentToken = "";
-                var inToken = false;
-                for (var i = 0, strLength = str.length; i < strLength; i++) {
-                    var currentChar = str.charAt(i);
-                    var isChar = isCharacter(currentChar);
-
-                    // On détermine si on entre ou si on a fini un mot.
-                    if (isPonctuation(currentChar)) {
-                        addToken(tokens, "" + currentChar);
-                        continue;
-                    }
-
-                    if (! inToken && isChar) {
-                        inToken = true;
-                        currentToken = "" + currentChar;
-                    }
-                    else if (inToken && ! isChar) {
-                        addToken(tokens, currentToken);
-                        currentToken = "";
-                    }
-                    else if (inToken && isChar) {
-                        currentToken += currentChar;
-                    }
+                if (! inToken && isChar) {
+                    inToken = true;
+                    currentToken = "" + currentChar;
                 }
-
-                if (inToken) {
+                else if (inToken && ! isChar) {
                     addToken(tokens, currentToken);
+                    currentToken = "";
                 }
-                return tokens;
-            },
-            inputFieldWidth: 10
-        },
+                else if (inToken && isChar) {
+                    currentToken += currentChar;
+                }
+            }
 
-        lines : {
-            inputSize : 100,
-            getVersionTypeAbbrKey : function() {
-                return versed.tr.getTrKey('lineAbbr_cap');
-            },
-            getVersionTypeLabelKey : function() {
-                return versed.tr.getTrKey('line_cap');
-            },
-            getNumberOfInputs : function(n) {
-                return 1; // une seule input pour les lignes orientées lignes.
-            },
-            parser : function(str) {
-                return [str];
-            },
-            inputFieldWidth: 100
-        }
-    };
+            if (inToken) {
+                addToken(tokens, currentToken);
+            }
+            return tokens;
+        },
+        inputFieldWidth: 10
+    });
+    _types.addElement({
+        typeName: "lines",
+        inputSize : 100,
+        getVersionTypeAbbrKey : function() {
+            return versed.tr.getTrKey('lineAbbr_cap');
+        },
+        getVersionTypeLabelKey : function() {
+            return versed.tr.getTrKey('line_cap');
+        },
+        getNumberOfInputs : function(n) {
+            return 1; // une seule input pour les lignes orientées lignes.
+        },
+        parser : function(str) {
+            return [str];
+        },
+        inputFieldWidth: 100
+    });
+
 
     function _buildTextInputStringLines(text) {
         return text.split('\n');
+    }
+
+    function _findType(typeName) {
+        return _types.findElement(function(type) {
+            return type.name === typeName;
+        });
     }
 
     function _setLines(textVersion, text) {
@@ -93,8 +100,9 @@ versed.textVersion = (function() {
 
         var stringLines = _buildTextInputStringLines(text);
         stringLines.forEach(function(str, index) {
-            var tokens = _types[textVersion.type].parser(str);
-            textVersionLine = versed.textVersionLine.create(index, tokens, textVersion.type, _types[textVersion.type].inputFieldWidth);
+            var type = _findType(textVersion.type);
+            var tokens = type.parser(str);
+            textVersionLine = versed.textVersionLine.create(index, tokens, textVersion.type, type.inputFieldWidth);
             textVersion.addElement(textVersionLine);
         });
     }
@@ -111,7 +119,8 @@ versed.textVersion = (function() {
             textVersion.findLine = function(lineNumber) {
                 var line = this.getElement(lineNumber);
                 if (!line) {
-                    return versed.textVersionLine.createEmptyLine(lineNumber, this.type, _types[textVersion.type].inputFieldWidth);
+                    var type = _findType(textVersion.type);
+                    return versed.textVersionLine.createEmptyLine(lineNumber, this.type, type.inputFieldWidth);
                 }
                 else {
                     return line;
@@ -119,7 +128,7 @@ versed.textVersion = (function() {
             };
 
             textVersion.getVersionAbbrKey = function() {
-                return _types[this.type].getVersionTypeAbbrKey();
+                return _findType(this.type).getVersionTypeAbbrKey();
             };
 
             textVersion.setLines = function(text) {
@@ -157,14 +166,15 @@ versed.textVersion = (function() {
         },
 
         eachTypes : function(fun) {
-            var labels = [];
-            for ( var prop in _types) {
-                fun(prop, _types[prop]);
-            }
+            _types.eachElement(fun);
         },
 
         joinLines : function(lines) {
             return lines.join("\n");
+        },
+
+        mapFunToArray : function(fun) {
+            return _types.mapFunToArray(fun);
         }
     };
 

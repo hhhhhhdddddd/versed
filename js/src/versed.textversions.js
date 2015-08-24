@@ -101,8 +101,8 @@ versed.textVersions = (function() {
                 this._listeners.push(listener);
             };
 
-            textVersions.eachTextVersionTypes = function(fun) {
-                versed.textVersion.eachTypes(fun);
+            textVersions.mapFunToVersionTypes = function(fun) {
+                return versed.textVersion.mapFunToArray(fun);
             };
 
             return textVersions;
