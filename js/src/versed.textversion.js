@@ -91,7 +91,7 @@ versed.textVersion = (function() {
 
     function _findType(typeName) {
         return _types.findElement(function(type) {
-            return type.name === typeName;
+            return type.typeName === typeName;
         });
     }
 
