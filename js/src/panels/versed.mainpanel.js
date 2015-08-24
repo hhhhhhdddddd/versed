@@ -108,18 +108,14 @@ versed.mainPanel = (function() {
                         textVersions.addTextVersion(inputsType, "");
                     }
                 },
-                texts : {
-                   innerLabel: versed.tr.getTrKey('add_cap'),
-                   textUpdater: versed.tr.translate
-                }
+               label: versed.tr.getTrKey('add_cap'),
+               labelUpdater: versed.tr.translate
             });
             var tokenInputsField = HD_.PanelField.create({
                 name: "tokenInputs",
                 type: "button",
-                texts : {
-                   innerLabel: versed.tr.getTrKey('tokensInput_cap'),
-                   textUpdater: versed.tr.translate
-                },
+                label: versed.tr.getTrKey('tokensInput_cap'),
+                labelUpdater: versed.tr.translate,
                 handler: function tokensInputsHandler() {
                     if (textVersions.versionsEmpty()) {
                         return;
@@ -143,10 +139,8 @@ versed.mainPanel = (function() {
             var saveInputsField = HD_.PanelField.create({
                 name: "saveInputs",
                 type: "button",
-                texts : {
-                   innerLabel: versed.tr.getTrKey('saveInputs_cap'),
-                   textUpdater: versed.tr.translate
-                },
+               label: versed.tr.getTrKey('saveInputs_cap'),
+               labelUpdater: versed.tr.translate,
                 handler: function saveInputsHandler() {
                     var contents = textVersions.getParsableContents();
                     HD_.Download.saveEncodedData(contents, 'contents.txt');
