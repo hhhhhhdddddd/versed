@@ -1,21 +1,23 @@
 versed = (function () {
 
-    function _setTr(versedObject, language, translationsKeys) {
+    function _setTr(appObject, language, translationsKeys) {
+        // NB. this est appObject.tr
+
         var translater = HD_.Translater.create();
         translater.addTranlsation("en", versed.en);
         translater.addTranlsation("fr", versed.fr);
         translater.setCurrentTranlsation(language);
         translater.setTrKeys(translationsKeys);
 
-        versedObject.tr = translater;
+        appObject.tr = translater;
         
-        versedObject.tr.addTranslaterPanel = function(parentDomNode, handler) {
-            var translaterPanel = HD_.TranslaterPanel.create(this, handler); // this est versedObject.tr
+        appObject.tr.addTranslaterPanel = function(parentDomNode, handler) {
+            var translaterPanel = HD_.TranslaterPanel.create(this, handler);
             translaterPanel.addTranslaterPanel(parentDomNode);
         };
 
-        versedObject.tr.trKey = function(key) {
-            return versed.tr.translate(versed.tr.getTrKey(key));
+        appObject.tr.trKey = function(key) {
+            return this.translate(this.getTrKey(key));
         };
     }
 
