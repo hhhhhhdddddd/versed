@@ -8,6 +8,7 @@ versed = (function () {
         translater.setTrKeys(translationsKeys);
 
         versedObject.tr = translater;
+        
         versedObject.tr.addTranslaterPanel = function(parentDomNode, handler) {
             var translaterPanel = HD_.TranslaterPanel.create(this, handler); // this est versedObject.tr
             translaterPanel.addTranslaterPanel(parentDomNode);
