@@ -1,52 +1,25 @@
 versed = (function () {
 
-    function _setTr(appObject, language, translationsKeys) {
-        // NB. this est appObject.tr
-
-        var translater = HD_.Translater.create();
-        translater.addTranlsation("en", versed.en);
-        translater.addTranlsation("fr", versed.fr);
-        translater.setCurrentTranlsation(language);
-        translater.setTrKeys(translationsKeys);
-
-        appObject.tr = translater;
-        
-        appObject.tr.addTranslaterPanel = function(parentDomNode, handler) {
-            var translaterPanel = HD_.TranslaterPanel.create(this, handler);
-            translaterPanel.addTranslaterPanel(parentDomNode);
-        };
-
-        appObject.tr.trKey = function(key) {
-            return this.translate(this.getTrKey(key));
-        };
-    }
+    var _translaterName = "tr";
 
     return {
         
         main : function() {
+            var that = this;
+
             HD_.LocalWarnings.persistentLocalWarnings();
 
-            _setTr(this, "en", versed.trKeys);
+            HD_.Translater.setAppTrProperty(that, _translaterName, "fr", versed.trKeys, [
+                {name: "en", translations: versed.en},
+                {name: "fr", translations: versed.fr},
+            ]);
 
             var textVersions = versed.textVersions.create();
             var mainPanel = versed.mainPanel.create(textVersions);
             textVersions.registerTextInputsObserver(mainPanel.findPanelByName("textVersionsPanel"));
             var mainNode = mainPanel.buildDomNode();
             
-            
-            versed.tr.addTranslaterPanel(mainNode, function translationHandler(translationName) {
-
-                function refreshFieldTexts(panel) {
-                    panel.mapPanels(function(pan) {
-                        if (pan.refreshFieldTexts) {
-                            pan.refreshFieldTexts();
-                        }
-                    });
-                }
-
-                versed.tr.setCurrentTranlsation(translationName);
-                refreshFieldTexts(mainPanel);
-            });
+            HD_.TranslaterPanel.addTranslaterPanel(that[_translaterName], mainPanel);
 
             return mainNode;
         },
