@@ -1,13 +1,5 @@
 versed = (function () {
 
-/*
-Ce que je veux. L'interface la plus simple et convivial à utiliser.
-Donc je commence par faire comme si ce que je voulais existait (simple et convivial) et je m'en sers dans main.
-Ensuite on voit comment ça peut se passer, si c'est viable, etc.
-*/
-
-
-
     return {
         
         main : function() {
