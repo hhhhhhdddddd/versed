@@ -39,6 +39,11 @@ versed.tr = (function() {
             _translater.eachElement(fun);
         },
 
+        addTranslaterPanel : function(parentDomNode, handler) {
+            var translaterPanel = HD_.TranslaterPanel.create(_translater, handler);
+            translaterPanel.addTranslaterPanel(parentDomNode);
+        },
+
         testTr : function(testedPanel) {
             function refreshFieldTexts(testedPanel) {
                 testedPanel.mapPanels(function(panel) {

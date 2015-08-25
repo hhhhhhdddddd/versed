@@ -14,7 +14,14 @@ Ensuite on voit comment ça peut se passer, si c'est viable, etc.
             HD_.LocalWarnings.persistentLocalWarnings();
 
             versed.tr.setTranslater("en", versed.tr.keys);
-            var translationsPanel = versed.translationsPanel.create(versed.tr, function(translationName) {
+
+            var textVersions = versed.textVersions.create();
+            var mainPanel = versed.mainPanel.create(textVersions);
+            textVersions.registerTextInputsObserver(mainPanel.findPanelByName("textVersionsPanel"));
+            var mainNode = mainPanel.buildDomNode();
+            
+            
+            versed.tr.addTranslaterPanel(mainNode, function(translationName) {
 
                 function refreshFieldTexts(panel) {
                     panel.mapPanels(function(pan) {
@@ -28,14 +35,6 @@ Ensuite on voit comment ça peut se passer, si c'est viable, etc.
                 refreshFieldTexts(mainPanel);
             });
 
-            var trDomNode = translationsPanel.buildDomNode();
-
-            var textVersions = versed.textVersions.create();
-            var mainPanel = versed.mainPanel.create(textVersions);
-            textVersions.registerTextInputsObserver(mainPanel.findPanelByName("textVersionsPanel"));
-            var mainNode = mainPanel.buildDomNode();
-            mainNode.appendChild(trDomNode);
-            versed.translationsPanel.placeNode(trDomNode);
             return mainNode;
         },
 
