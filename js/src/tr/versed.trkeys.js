@@ -1,4 +1,4 @@
-versed.tr.keys = (function() {
+versed.trKeys = (function() {
 
     var keysArr = [
         'add_cap',

@@ -1,11 +1,29 @@
 versed = (function () {
 
+    function _setTr(versedObject, language, translationsKeys) {
+        var translater = HD_.Translater.create();
+        translater.addTranlsation("en", versed.en);
+        translater.addTranlsation("fr", versed.fr);
+        translater.setCurrentTranlsation(language);
+        translater.setTrKeys(translationsKeys);
+
+        versedObject.tr = translater;
+        versedObject.tr.addTranslaterPanel = function(parentDomNode, handler) {
+            var translaterPanel = HD_.TranslaterPanel.create(this, handler); // this est versedObject.tr
+            translaterPanel.addTranslaterPanel(parentDomNode);
+        };
+
+        versedObject.tr.trKey = function(key) {
+            return versed.tr.translate(versed.tr.getTrKey(key));
+        };
+    }
+
     return {
         
         main : function() {
             HD_.LocalWarnings.persistentLocalWarnings();
 
-            versed.tr.setTranslater("en", versed.tr.keys);
+            _setTr(this, "en", versed.trKeys);
 
             var textVersions = versed.textVersions.create();
             var mainPanel = versed.mainPanel.create(textVersions);
@@ -13,7 +31,7 @@ versed = (function () {
             var mainNode = mainPanel.buildDomNode();
             
             
-            versed.tr.addTranslaterPanel(mainNode, function(translationName) {
+            versed.tr.addTranslaterPanel(mainNode, function translationHandler(translationName) {
 
                 function refreshFieldTexts(panel) {
                     panel.mapPanels(function(pan) {
@@ -23,7 +41,7 @@ versed = (function () {
                     });
                 }
 
-                versed.tr.setLocalTr(translationName);
+                versed.tr.setCurrentTranlsation(translationName);
                 refreshFieldTexts(mainPanel);
             });
 

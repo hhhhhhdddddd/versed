@@ -1,4 +1,4 @@
-versed.tr.fr = {
+versed.fr = {
     add_cap : 'Ajouter',
     tokensInput_cap : 'Entrées Tokens',
     saveInputs_cap : 'Sauvegarder les Entrées',
